@@ -1,0 +1,141 @@
+---
+title: "Gabe Love Lab 2"
+author: "Gabe Love"
+date: "9/14/2021"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+## R Markdown
+
+```{r}
+library(classdata)
+head(choco)
+
+#sort(choco$CocoaPercent, decreasing = TRUE)
+#I commented these out because it fills the page with numbers
+#sort(choco$CocoaPercent)
+```
+
+1)There were no outliers as there were values all the way to 100.
+
+```{r}
+hist(choco$CocoaPercent)
+```
+
+The histogram has a mostly normal distribution with a possible left skew.
+
+```{r}
+boxplot(choco$CocoaPercent)
+```
+
+The boxplot has many values outside of the IQR with the median being around 70.
+
+```{r}
+
+str(choco)
+
+barplot(sort(table(choco$CountryBeanOrigin), decreasing = TRUE), las = 2, width = 6, cex.x = 5)
+
+```
+
+2)The top 7 countries have a lot more ratings than the other countries, and from there it steadily trails to double and single digit number of ratings.
+
+```{r}
+
+plot(choco$CocoaPercent, choco$Rating)
+
+bottom3 <- choco[(choco$CocoaPercent < 62),]
+
+middle3 <- choco[(choco$CocoaPercent >= 62 & choco$CocoaPercent < 82 ),]
+  
+top3 <- choco[(choco$CocoaPercent >= 82 & choco$CocoaPercent <= 100 ),]
+
+hist(bottom3$Rating)
+
+hist(middle3$Rating)
+
+hist(top3$Rating)
+
+mean(bottom3$Rating)
+mean(middle3$Rating)
+mean(top3$Rating)
+
+```
+
+3) Scatterplot doesn't work because there are many duplicated values on one point. Percentage of cocoa does seem to affect ratings, with 62% - 82% being the most popular, but in general a higher % is more favorable than a lwoer cocoa %.
+
+```{r}
+venezuela <- choco[choco$CountryBeanOrigin == 'Venezuela', ]
+peru <- choco[choco$CountryBeanOrigin == 'Peru', ]
+dominican <- choco[choco$CountryBeanOrigin == 'Dominican Republic', ]
+ecuador <- choco[choco$CountryBeanOrigin == 'Ecuador', ]
+madagascar <- choco[choco$CountryBeanOrigin == 'Madagascar', ]
+blend <- choco[choco$CountryBeanOrigin == 'Blend', ]
+nicaragua <- choco[choco$CountryBeanOrigin == 'Nicaragua', ]
+
+mean(venezuela$Rating, na.rm = TRUE)
+mean(peru$Rating, na.rm = TRUE)
+mean(dominican$Rating, na.rm = TRUE)
+mean(ecuador$Rating, na.rm = TRUE)
+mean(madagascar$Rating, na.rm = TRUE)
+mean(blend$Rating, na.rm = TRUE)
+mean(nicaragua$Rating, na.rm = TRUE)
+
+venezuela <- sort(table(venezuela$Characteristics1), decreasing = TRUE)
+peru <- sort(table(peru$Characteristics1), decreasing = TRUE)
+dominican <- sort(table(dominican$Characteristics1), decreasing = TRUE)
+ecuador <- sort(table(ecuador$Characteristics1), decreasing = TRUE)
+madagascar <- sort(table(madagascar$Characteristics1), decreasing = TRUE)
+blend <- sort(table(blend$Characteristics1), decreasing = TRUE)
+nicaragua <- sort(table(nicaragua$Characteristics1), decreasing = TRUE)
+
+venezuela <- head(venezuela)
+barplot(venezuela)
+peru <- head(peru)
+barplot(peru)
+dominican <- head(dominican)
+barplot(dominican)
+ecuador <- head(ecuador)
+barplot(ecuador)
+madagascar <- head(madagascar)
+barplot(madagascar)
+blend <- head(blend)
+barplot(blend)
+nicaragua <- head(nicaragua)
+barplot(nicaragua)
+
+```
+
+4) Using the top 7 countries from question 2 (Venezuela, Peru, Dominican Republic, Ecuador, Madagascar, Blend, and Nicaragua), we see that the average ratings are very similar with Nicaragua having the highest average of 3.24, and Blend having the lowest at 3.04. As for flavor, each are described as follows:
+Venezuela tends to be nutty and creamy.
+Peru tends to be sandy and creamy.
+Dominican Republic tends to be creamy, sandy, and spicy.
+Ecuador tends to be floral and creamy.
+Madagascar tends to be sandy and creamy.
+Blend tends to be sweet and creamy.
+Nicaragua tends to be oily and sandy.
+
+5)
+The first analysis I will perform is if year the review was made affects the rating given.
+```{r}
+
+plot(aggregate(choco$Rating, list(choco$ReviewDate), FUN=mean))
+
+```
+
+While there appears to be a small positive trend in the average ratings for each year, the differences in the mean is negligible.
+
+The next analysis will be to see if a certain company is providing better chocolate on average than any other company.
+
+```{r}
+choco <- na.omit(choco)
+df <- aggregate(choco$Rating, list(choco$Company), FUN=mean)
+
+df[order(-df$x),]
+```
+
+Cacao Sampaka, Idilio, Letterpress, Matale, Patric, Pierre Marcolini, and White Label all have the highest company averages of 4.0.
